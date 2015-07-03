@@ -21,7 +21,9 @@
         return this.attr(name) !== undefined;
     };
 
-
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
 
 
     function closeModal(){
@@ -66,6 +68,11 @@
         $.ajax({
             url:settings.url,
             method:settings.method,
+            error:function(request, textStatus, errorThrown){
+                $(modalId).find('.modal-header .modal-title').remove();
+                $(modalId).find('.modal-header').append('<div class="modal-title"><h4 class="modal-title">'+textStatus.capitalizeFirstLetter()+' - '+errorThrown+'</h4></div>');
+                $(modalId).find('.modal-body').html(request.responseText);                
+            },
             success:function(response){
                 $(modalId).find('.modal-header .modal-title').remove();
                 $(modalId).find('.modal-header').append('<div class="modal-title"><h4 class="modal-title">'+settings.title+'</h4></div>');
