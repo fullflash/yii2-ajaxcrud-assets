@@ -2,6 +2,7 @@
  * Ajax Crud 
  * =================================
  * Use for johnitvn/yii2-ajaxcrud extension
+ * @author John Martin john.itvn@gmail.com
  */
 
 (function( $ ) {
@@ -237,22 +238,22 @@
         return false;
     }
 
+  
     function onToggleFullscreenAction(){
-        if($(this).find("i").hasClass('glyphicon-resize-full')){
-            launchIntoFullscreen(document.getElementById(dataTablePjaxId.substring(1))); // the whole page
-            $(this).find("i").removeClass('glyphicon-resize-full');
-            $(this).find("i").addClass('glyphicon-resize-small');
-            $(createActionButtonCls).addClass("hidden");
-        }else{
-            exitFullscreen();
-            $(this).find("i").removeClass('glyphicon-resize-small');
-            $(this).find("i").addClass('glyphicon-resize-full');
-            $(createActionButtonCls).removeClass("hidden");
-        }
-
+        $(window).data('fullscreen-state')?exitFullscreen():launchIntoFullscreen(document.getElementById(dataTablePjaxId.substring(1)));        
     }
-    
 
+    $(window).bind("fullscreen-on", function(e) {
+        $(toggleFullscreenActionButtonCls).find("i").removeClass('glyphicon-resize-full');
+        $(toggleFullscreenActionButtonCls).find("i").addClass('glyphicon-resize-small');
+    });
+
+    $(window).bind("fullscreen-off", function(e) {
+        $(toggleFullscreenActionButtonCls).find("i").removeClass('glyphicon-resize-small');
+        $(toggleFullscreenActionButtonCls).find("i").addClass('glyphicon-resize-full');
+    });
+
+    
     function onUpdatePositiveClick(e){
         var form = $(modalId).find('form');
             $.ajax({
@@ -342,8 +343,10 @@
     $(modalId).on('hidden.bs.modal',clearModalData);
 
 
+  
+
+
 
 }( jQuery ));
-
 
 
