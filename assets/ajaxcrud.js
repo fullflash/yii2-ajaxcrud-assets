@@ -189,10 +189,16 @@
 
     function onViewAction(e){
         e.preventDefault();
+        var viewActionButton = this;
         openModal({
             url: $(this).attr("href"),
             title: $(this).hasAttr("data-modal-title")?$(this).attr("data-modal-title"):'View',
+            positiveButton:$(this).hasAttr("data-modal-positive")?$(this).attr("data-modal-positive"):'Save',
             negativeButton:$(this).hasAttr("data-modal-negative")?$(this).attr("data-modal-negative"):'Close',
+            onPositiveClick:function(){        
+                clearModalData();        
+                $(viewActionButton).parent().find('.update-action-button').trigger('click');            
+            },
         });
     }
 
