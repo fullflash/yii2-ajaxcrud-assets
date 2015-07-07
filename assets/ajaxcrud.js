@@ -201,7 +201,7 @@
         openModal({
             url: $(this).attr("href"),
             title: $(this).hasAttr("data-modal-title")?$(this).attr("data-modal-title"):'View',
-            positiveButton:$(this).hasAttr("data-modal-positive")?$(this).attr("data-modal-positive"):'Save',
+            positiveButton:$(this).hasAttr("data-modal-positive")?$(this).attr("data-modal-positive"):'Edit',
             negativeButton:$(this).hasAttr("data-modal-negative")?$(this).attr("data-modal-negative"):'Close',
             onPositiveClick:function(){        
                 clearModalData();        
