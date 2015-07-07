@@ -16,10 +16,10 @@ class CrudAsset extends AssetBundle
     public $css = [
     ];
     public $js = [
-        //'jquery.fullscreen.js',
-        //'ajaxcrud.js',
-        'jquery.fullscreen.min.js',
-        'ajaxcrud.min.js',
+        'jquery.fullscreen.js',
+        'ajaxcrud.js',
+        // 'jquery.fullscreen.min.js',
+        // 'ajaxcrud.min.js',
 
     ];
     public $depends = [
