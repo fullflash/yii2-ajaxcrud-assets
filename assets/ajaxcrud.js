@@ -2,6 +2,7 @@
  * Ajax Crud 
  * =================================
  * Use for johnitvn/yii2-ajaxcrud extension
+ * @author John Martin john.itvn@gmail.com
  */
 
 (function( $ ) {
@@ -20,7 +21,9 @@
         return this.attr(name) !== undefined;
     };
 
-
+    String.prototype.capitalizeFirstLetter = function() {
+        return this.charAt(0).toUpperCase() + this.slice(1);
+    }
 
 
     function closeModal(){
@@ -65,6 +68,11 @@
         $.ajax({
             url:settings.url,
             method:settings.method,
+            error:function(request, textStatus, errorThrown){
+                $(modalId).find('.modal-header .modal-title').remove();
+                $(modalId).find('.modal-header').append('<div class="modal-title"><h4 class="modal-title">'+textStatus.capitalizeFirstLetter()+' - '+errorThrown+'</h4></div>');
+                $(modalId).find('.modal-body').html(request.responseText);                
+            },
             success:function(response){
                 $(modalId).find('.modal-header .modal-title').remove();
                 $(modalId).find('.modal-header').append('<div class="modal-title"><h4 class="modal-title">'+settings.title+'</h4></div>');
@@ -243,22 +251,22 @@
         return false;
     }
 
+  
     function onToggleFullscreenAction(){
-        if($(this).find("i").hasClass('glyphicon-resize-full')){
-            launchIntoFullscreen(document.getElementById(dataTablePjaxId.substring(1))); // the whole page
-            $(this).find("i").removeClass('glyphicon-resize-full');
-            $(this).find("i").addClass('glyphicon-resize-small');
-            $(createActionButtonCls).addClass("hidden");
-        }else{
-            exitFullscreen();
-            $(this).find("i").removeClass('glyphicon-resize-small');
-            $(this).find("i").addClass('glyphicon-resize-full');
-            $(createActionButtonCls).removeClass("hidden");
-        }
-
+        $(window).data('fullscreen-state')?exitFullscreen():launchIntoFullscreen(document.getElementById(dataTablePjaxId.substring(1)));        
     }
-    
 
+    $(window).bind("fullscreen-on", function(e) {
+        $(toggleFullscreenActionButtonCls).find("i").removeClass('glyphicon-resize-full');
+        $(toggleFullscreenActionButtonCls).find("i").addClass('glyphicon-resize-small');
+    });
+
+    $(window).bind("fullscreen-off", function(e) {
+        $(toggleFullscreenActionButtonCls).find("i").removeClass('glyphicon-resize-small');
+        $(toggleFullscreenActionButtonCls).find("i").addClass('glyphicon-resize-full');
+    });
+
+    
     function onUpdatePositiveClick(e){
         var form = $(modalId).find('form');
             $.ajax({
@@ -348,8 +356,10 @@
     $(modalId).on('hidden.bs.modal',clearModalData);
 
 
+  
+
+
 
 }( jQuery ));
-
 
 
