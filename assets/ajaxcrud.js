@@ -343,12 +343,13 @@
                 }
             }
 
+             console.log('2');
             $.ajax({
                 url: $(toggleButton).hasAttr("href")? $(toggleButton).attr("href"):$(toggleButton).attr("data-url"),
                 method:$(toggleButton).attr("data-method"),
                 error:function(request){
                     alert(request.responseText);
-                }
+                },
                 success:function(response){
                     $(toggleButton)[0].outerHTML = response;
                 }
