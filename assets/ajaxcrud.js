@@ -190,6 +190,9 @@
                 $.ajax({
                     url: $(this).attr("href"),
                     method:$(this).attr("data-method"),
+                    error:function(request){
+                        alert(request.responseText);
+                    },
                     success:function(){
                         reloadGridView();
                         closeModal();
@@ -246,6 +249,9 @@
                     url: $(bulkDeleteActionButtonCls).attr("href"),
                     method:$(bulkDeleteActionButtonCls).attr("data-method"),
                     data:{pks:JSON.stringify(selectedIds)},
+                    error:function(request){
+                        alert(request.responseText);
+                    },
                     success:function(){
                         reloadGridView();
                         closeModal();
@@ -277,6 +283,9 @@
                     url:$(form).attr('action'),
                     method:$(form).attr('method'),
                     data:$(form).serialize(),
+                    error:function(request){
+                        alert(request.responseText);
+                    },
                     success:function(response){
                         if(response.code==200){
                             reloadGridView();
@@ -307,6 +316,9 @@
                     url:$(form).attr('action'),
                     method:$(form).attr('method'),
                     data:$(form).serialize(),
+                    error:function(request){
+                        alert(request.responseText);
+                    },
                     success:function(response){
                         if(response.code==200){
                             reloadGridView();
