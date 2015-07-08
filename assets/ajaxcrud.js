@@ -342,8 +342,7 @@
                     return false;
                 }
             }
-
-             console.log('2');
+             
             $.ajax({
                 url: $(toggleButton).hasAttr("href")? $(toggleButton).attr("href"):$(toggleButton).attr("data-url"),
                 method:$(toggleButton).attr("data-method"),
