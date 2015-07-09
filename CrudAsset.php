@@ -10,9 +10,11 @@ use yii\web\AssetBundle;
 class CrudAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/johnitvn/yii2-ajaxcrud-assets/assets';
+
     public $publishOptions = [
         'forceCopy' => true,
     ];
+    
     public $css = [
     ];
     public $js = [

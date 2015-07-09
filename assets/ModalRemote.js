@@ -20,6 +20,9 @@ function ModalRemote(modalId){
 
 	this.footer = $(modalId).find('.modal-footer');
 
+	this.loadingContent = '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>';
+
+
 	/**
 	* Show the modal
 	*/
@@ -111,10 +114,12 @@ function ModalRemote(modalId){
 		buttonElm = document.createElement('button');
         buttonElm.setAttribute('class', classes===null?'btn btn-primary':classes);
         buttonElm.innerHTML = label;
-
+        var instance = this;
 		$(this.footer).append(buttonElm);
 		if(callback!==null){
-			$(buttonElm).click(callback);
+			$(buttonElm).click(function(){
+				callback.call(instance,this,event);
+			});
 		}
 	}
 
@@ -122,7 +127,7 @@ function ModalRemote(modalId){
 	* Show loading state in modal
 	*/
 	this.displayLoading = function(){
-		this.setContent('<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>');
+		this.setContent(this.loadingContent);
 		this.setTitle('Loading');
 	}
 
@@ -146,6 +151,7 @@ function ModalRemote(modalId){
 		this.addButton(cancelLabel===undefined?"Cancel":cancelLabel,'btn btn-default pull-left',cancelCallback);
 	}
 
+	
 	/**
 	* Auto load content from a tag
 	* Attribute to use for blind 
@@ -156,12 +162,17 @@ function ModalRemote(modalId){
 	*   - data-confirm-title
 	*	- data-confirm-message
 	* Response json field
+	*   - forceReload 
+	*   - forceClose
 	*	- error
 	*	- title
 	*   - content
 	*   - footer
 	*/
-	this.remote = function(elm,callback){
+	this.remote = function(elm,bulkData){
+		var url = $(elm).hasAttr('href')?$(elm).attr('href'):$(elm).attr('data-url');
+		var method = $(elm).hasAttr('data-request-method')?$(elm).attr('data-request-method'):'GET';
+
 		if($(elm).hasAttr('data-confirm-title')||$(elm).hasAttr('data-confirm-message')){
 			this.show();
 			var instance = this;
@@ -171,52 +182,129 @@ function ModalRemote(modalId){
 				$(elm).attr('data-comfirm-ok'),
 				$(elm).attr('data-comfirm-cancel'),
 				function(e){
-					doRemote(instance,elm,callback);
+					doRemote.call(instance,url,method,bulkData);
 				},
 				function(e){
 					this.hide();
 				}
 			)
 		}else{
-			doRemote(this,elm);
+			doRemote.call(this,url,method,bulkData);
 		}
 	}
 
-	function doRemote(modalRemote,elm,callback){
-		var url = $(elm).hasAttr('href')?$(elm).attr('href'):$(elm).attr('data-url');
-		var method = $(elm).hasAttr('data-request-method')?$(elm).attr('data-request-method'):'GET';
 
+	/**
+	* Send ajax request and wraper response to modal
+	* @param ModalRemote modalRemote the instance of ModalRemote
+	* @param string url The url of request 
+	* @param string method The method of request
+	*/
+	function doRemote(url,method,bulkData){	
+		var instance = this;
 		$.ajax({
 			url:url,
 			method:method,
+			data:bulkData,
 			beforeSend:function(){
-				modalRemote.show();
-				modalRemote.displayLoading();
+				beforeRemoteRequest.call(instance);
 			},
 			error:function(response){
-				modalRemote.setTitle(response.status + response.statusText);
-				modalRemote.setContent(response.responseText);
-				modalRemote.addButton('Close','btn btn-default',function(){
-					modalRemote.close();
-				})					
+				errorRemoteResponse.call(instance,response);
 			},
-			success:function(response){		
-				if(response.forceReload){
-					$.pjax.reload({container:'#crud-datatable-pjax'});
-				}
-
-				if(response.forceClose){
-					modalRemote.hide();					
-				}
-				console.log(response.error !== undefined);
-				console.log( response.error !== false);
-				if(response.error !== undefined && response.error === false){
-					modalRemote.setTitle(response.title);
-					modalRemote.setContent(response.content);
-					modalRemote.setFooter(response.footer);
-				}				
+			success:function(response){
+				successRemoteResponse.call(instance,response);
 			}
 		});
 	}
 
-}
+	/*
+	* Before send request process
+	* - Ensure clear and show modal
+	* - Show loading state in modal
+	*/
+	function beforeRemoteRequest(){		
+		this.show();
+		this.displayLoading();
+	}
+
+	/**
+	* When remote receive error response process
+	*/
+	function errorRemoteResponse(response){
+		this.setTitle(response.status + response.statusText);
+		this.setContent(response.responseText);
+		this.addButton('Close','btn btn-default',function(button,event){
+			this.hide();
+		})				
+	}
+
+	/**
+	* When remote receive success response process
+	*/
+	function successRemoteResponse(response){
+
+		// reload datatable if response contain forceReload field	
+		if(response.forceReload !== undefined && response.forceReload){
+			$.pjax.reload({container:'#crud-datatable-pjax'});
+		}
+
+		// close modal if response contain forceClose field	
+		if(response.forceClose !== undefined && response.forceClose){
+			/**
+			* Close modal and don't do anything 
+			*/
+			this.hide();					
+			return;					
+		}
+
+		// Show the content if response haven't error	
+		if(response.error !== undefined && response.error === false){
+			this.setTitle(response.title);
+			this.setContent(response.content);
+			this.setFooter(response.footer);
+		}	
+
+
+		/**
+		* Process when modal have form
+		*/
+		if($(this.content).find("form")[0] !== undefined){
+
+			var modalForm = $(this.content).find("form")[0];
+			var modalFormSubmitBtn = $(this.footer).find('[type="submit"]')[0];
+
+
+			if(modalFormSubmitBtn===undefined){
+				// If not found submit button throw warning message
+				console.warn('Modal have form but have not any submit button');
+			}else{
+				var instance = this;
+
+				// Submit form when user click submit button
+				$(modalFormSubmitBtn).click(function(e){
+					var url = $(modalForm).attr('action');
+					var method = $(modalForm).hasAttr('method')?$(modalForm).attr('method'):'GET';
+					var data = $(modalForm).serializeArray();
+					$.ajax({
+						url:url,
+						method:method,
+						data: data,
+						beforeSend:function(){
+							beforeRemoteRequest.call(instance);
+						},
+						error:function(response){
+							errorRemoteResponse.call(instance,response);
+						},
+						success:function(response){
+							successRemoteResponse.call(instance,response);
+						}
+					});
+				});				
+			}
+		}// End of found form check
+		
+	}// End of function successRemoteResponse
+
+
+}// End of Object
