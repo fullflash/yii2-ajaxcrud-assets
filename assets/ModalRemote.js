@@ -10,9 +10,20 @@
 	};
 }( jQuery ));
 
+
+
 function ModalRemote(modalId){
 
+
+	this.defauls = {
+		okLabel:"OK",
+		cancelLabel:"Cancel",
+		loadingTitle:"Loading",
+	};
+
 	this.modal = $(modalId);
+
+	this.dialog - $(modalId).find('.modal-dialog');
 
 	this.header = $(modalId).find('.modal-header');
 
@@ -21,6 +32,7 @@ function ModalRemote(modalId){
 	this.footer = $(modalId).find('.modal-footer');
 
 	this.loadingContent = '<div class="progress progress-striped active" style="margin-bottom:0;"><div class="progress-bar" style="width: 100%"></div></div>';
+
 
 
 	/**
@@ -128,7 +140,7 @@ function ModalRemote(modalId){
 	*/
 	this.displayLoading = function(){
 		this.setContent(this.loadingContent);
-		this.setTitle('Loading');
+		this.setTitle(this.defauls.loadingTitle);
 	}
 
 	/**
@@ -147,8 +159,23 @@ function ModalRemote(modalId){
 		if(message!==undefined){
 			this.setContent(message);
 		}
-		this.addButton(okLabel===undefined?"OK":okLabel,'btn btn-primary',okCallback);
-		this.addButton(cancelLabel===undefined?"Cancel":cancelLabel,'btn btn-default pull-left',cancelCallback);
+		this.addButton(okLabel===undefined?this.defauls.okLabel:okLabel,'btn btn-primary',okCallback);
+		this.addButton(cancelLabel===undefined?this.defauls.cancelLabel:cancelLabel,'btn btn-default pull-left',cancelCallback);
+	}
+
+	/**
+	* Set size of modal 
+	* large/normal/small
+	*/
+	this.setSize = function(size){
+		$(this.dialog).removeClass('modal-lg');
+		$(this.dialog).removeClass('modal-sm');
+		if(size=='large')
+			$(this.dialog).addClass('modal-lg');
+		else if(size=='small')
+			$(this.dialog).addClass('modal-sm');
+		else if(size!=='normal')
+			console.warn("Not define size"+size);
 	}
 
 	
@@ -156,25 +183,28 @@ function ModalRemote(modalId){
 	* Auto load content from a tag
 	* Attribute to use for blind 
 	* 	- href/data-url(If not set href will get data-url)
-	* 	- data-request-method
-	*   - data-comfirm-ok
-	*   - data-confirm-cancel
-	*   - data-confirm-title
-	*	- data-confirm-message
+	* 	- data-request-method   (string)
+	*   - data-comfirm-ok       (string)
+	*   - data-confirm-cancel   (string)
+	*   - data-confirm-title    (string)
+	*	- data-confirm-message  (string)
+	*   - data-modal-size		(small/normal/large)
 	* Response json field
-	*   - forceReload 
-	*   - forceClose
-	*	- error
-	*	- title
-	*   - content
-	*   - footer
+	*   - forceReload           (boolean)
+	*   - forceClose            (boolean)
+	*	- size                  (small/normal/large)
+	*	- title                 (string/html)
+	*   - content               (string/html)
+	*   - footer                (string/html)
 	*/
 	this.remote = function(elm,bulkData){
 		var url = $(elm).hasAttr('href')?$(elm).attr('href'):$(elm).attr('data-url');
 		var method = $(elm).hasAttr('data-request-method')?$(elm).attr('data-request-method'):'GET';
+		var size = $(elm).hasAttr('data-modal-size')?$(elm).attr('data-modal-size'):'normal';
 
 		if($(elm).hasAttr('data-confirm-title')||$(elm).hasAttr('data-confirm-message')){
 			this.show();
+			this.setSize(size);
 			var instance = this;
 			this.confirm(
 				$(elm).attr('data-confirm-title'),
@@ -228,6 +258,7 @@ function ModalRemote(modalId){
 		this.displayLoading();
 	}
 
+
 	/**
 	* When remote receive error response process
 	*/
@@ -258,13 +289,17 @@ function ModalRemote(modalId){
 			return;					
 		}
 
-		// Show the content if response haven't error	
-		if(response.error !== undefined && response.error === false){
-			this.setTitle(response.title);
-			this.setContent(response.content);
-			this.setFooter(response.footer);
-		}	
+		if(response.size !== undefined)
+			this.setSize(response.size);
 
+		if(response.title!==undefined)
+			this.setTitle(response.title);
+
+		if(response.content!==undefined)
+			this.setContent(response.content);
+
+		if(response.footer!==undefined)
+			this.setFooter(response.footer);
 
 		/**
 		* Process when modal have form

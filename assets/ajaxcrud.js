@@ -4,13 +4,13 @@
  * Use for johnitvn/yii2-ajaxcrud extension
  * @author John Martin john.itvn@gmail.com
  */
-
 $(document).ready(function(){
 
 	// Create instance of Modal Remote
 	// This instance will be controller all business logic of modal
-	modal = new ModalRemote('#ajaxCrubModal');
+	//modal = ModalRemoteController.getRemote();
 
+	
 	// Catch click event of all button want to open modal
 	$(document).on('click','[role="modal-remote"]',function(event){
 	    event.preventDefault(); 
