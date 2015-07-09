@@ -11,16 +11,17 @@ class CrudAsset extends AssetBundle
 {
     public $sourcePath = '@vendor/johnitvn/yii2-ajaxcrud-assets/assets';
 
-    public $publishOptions = [
-        'forceCopy' => true,
-    ];
+    // public $publishOptions = [
+    //     'forceCopy' => true,
+    // ];
     
     public $css = [
     ];
     public $js = [
-        'ModalRemote.js',
-        'ajaxcrud.js',
-        // 'ajaxcrud.min.js',
+        //'ModalRemote.js',
+        //'ajaxcrud.js',
+        'ModalRemote.min.js',
+        'ajaxcrud.min.js',
 
     ];
     public $depends = [

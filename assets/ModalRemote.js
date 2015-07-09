@@ -1,5 +1,5 @@
 /*!
- * Ajax Crud Modal
+ * Modal Remote
  * =================================
  * Use for johnitvn/yii2-ajaxcrud extension
  * @author John Martin john.itvn@gmail.com
