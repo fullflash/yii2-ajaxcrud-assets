@@ -16,6 +16,7 @@ class CrudAsset extends AssetBundle
     // ];
     
     public $css = [
+        'ajaxcrud.css'
     ];
     public $js = [
         //'ModalRemote.js',
