@@ -16,15 +16,15 @@ class CrudAsset extends AssetBundle
     public $css = [
     ];
     public $js = [
-        'jquery.fullscreen.js',
+        'ModalRemote.js',
         'ajaxcrud.js',
-        // 'jquery.fullscreen.min.js',
         // 'ajaxcrud.min.js',
 
     ];
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap\BootstrapAsset',
+        'yii\bootstrap\BootstrapPluginAsset',
         'kartik\grid\GridViewAsset',
     ];
 
