@@ -1,5 +1,5 @@
 {
-    "name": "johnitvn/yii2-ajaxcrud-assets",
+    "name": "fullflash/yii2-ajaxcrud-assets",
     "description": "Asset Bundle for yii2-ajaxcrud extension",
     "type": "yii2-extensions",
     "license": "Apache 2.0",
@@ -12,12 +12,10 @@
     "minimum-stability": "dev",
     "require": {
         "kartik-v/yii2-grid": "3.0.4",
-        "kartik-v/yii2-mpdf": "v1.0.0",
-        "kartik-v/yii2-editable": "1.7.2"
     },
     "autoload": {
         "psr-4": {
-            "johnitvn\\ajaxcrudassets\\": ""
+            "fullflash\\ajaxcrudassets\\": ""
         }
     }
 }
